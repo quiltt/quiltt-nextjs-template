@@ -17,8 +17,9 @@ This is a [Next.js](https://nextjs.org/) project template integrated with [Quilt
 1. Clone this repository:
 
   ```bash
-  git clone https://github.com/your-repo/quiltt-nextjs-template.git
+  git clone https://github.com/quiltt/quiltt-nextjs-template.git
   cd quiltt-nextjs-template
+  ```
 
 2. Install dependencies:
 
@@ -28,8 +29,11 @@ This is a [Next.js](https://nextjs.org/) project template integrated with [Quilt
 
 3. Set up your environment variables:
 
-  Create a .env.local file in the root directory and add your Quiltt API key:
-  CopyQUILTT_API_SECRET_KEY=your_api_secret_key_here
+  Create a `.env.local file` in the root directory and add your Quiltt API key:
+
+  ```yaml
+  QUILTT_API_SECRET_KEY=your_api_secret_key_here
+  ```
 
 4. Generate GraphQL types:
 
@@ -43,19 +47,19 @@ This is a [Next.js](https://nextjs.org/) project template integrated with [Quilt
   pnpm dev
   ```
 
-  Open [`http://localhost:3000`](http://localhost:3000) with your browser to see the result.
+  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Project Structure
 
-- /src/app: Next.js app router pages
-- /src/components: Reusable React components
-- /src/generated: Generated GraphQL types
-- /src/hooks: Custom React hooks
-- /src/lib: Utility functions and shared logic
+- `/src/app`: Next.js app router pages
+- `/src/components`: Reusable React components
+- `/src/generated`: Generated GraphQL types
+- `/src/hooks`: Custom React hooks
+- `/src/lib`: Utility functions and shared logic
 
 ## Customization
 
-You can start customizing the template by modifying the components in the src/app directory. The project uses Tailwind CSS for styling, which can be configured in the tailwind.config.js file.
+You can start customizing the template by modifying the components in the `src/app` directory. The project uses Tailwind CSS for styling, which can be configured in the `tailwind.config.ts` file.
 
 ## Learn More
 

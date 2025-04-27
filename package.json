@@ -4,11 +4,12 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "next dev --turbopack",
 		"build": "next build",
-		"start": "next start",
+		"dev": "next dev --turbopack",
+		"graphql:generate": "graphql-codegen",
 		"lint": "TIMING=1 biome check src/ --write",
-		"graphql:generate": "graphql-codegen"
+		"start": "next start",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "3.9.0",

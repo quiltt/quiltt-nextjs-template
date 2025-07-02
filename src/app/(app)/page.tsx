@@ -1,7 +1,7 @@
 'use client'
 
-import { QuilttButton, useQuilttSession } from '@quiltt/react'
 import type { ConnectorSDKCallbackMetadata } from '@quiltt/react'
+import { QuilttButton, useQuilttSession } from '@quiltt/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'

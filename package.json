@@ -20,7 +20,7 @@
 		"class-variance-authority": "0.7.1",
 		"clsx": "2.1.1",
 		"dotenv": "17.0.1",
-		"next": "15.4.8",
+		"next": "15.5.10",
 		"react": "19.2.1",
 		"react-dom": "19.2.1",
 		"react-hook-form": "7.59.0",

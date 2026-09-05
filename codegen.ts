@@ -27,6 +27,11 @@ const config: CodegenConfig = {
       presetConfig: {
         fragmentMasking: false,
       },
+      config: {
+        // Emit `import type` so generated files stay compatible with
+        // `verbatimModuleSyntax` (enabled in tsconfig.json).
+        useTypeImports: true,
+      },
     },
   },
 };

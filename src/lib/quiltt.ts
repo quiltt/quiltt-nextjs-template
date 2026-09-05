@@ -38,12 +38,12 @@ export interface QuilttSessionResponse {
 }
 
 export class QuilttApiError extends Error {
-  constructor(
-    message: string,
-    readonly status: number,
-  ) {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
     super(message);
     this.name = "QuilttApiError";
+    this.status = status;
   }
 }
 

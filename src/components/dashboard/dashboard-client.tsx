@@ -159,7 +159,9 @@ function ConnectCard({
   connectionId,
   onExitSuccess,
 }: {
-  connectionId?: string;
+  // `| undefined` is required because the caller passes `connectionId` (which
+  // is `string | undefined`) unconditionally under `exactOptionalPropertyTypes`.
+  connectionId?: string | undefined;
   onExitSuccess: (metadata: ConnectorSDKCallbackMetadata) => void;
 }) {
   return (

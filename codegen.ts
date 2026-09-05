@@ -1,31 +1,34 @@
-import path from 'node:path'
-import type { CodegenConfig } from '@graphql-codegen/cli'
-import dotenv from 'dotenv'
+import path from "node:path";
 
-// Load environment variables
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
+import type { CodegenConfig } from "@graphql-codegen/cli";
+import dotenv from "dotenv";
+
+// Load credentials from `.env.local` so codegen can introspect the schema.
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 const config: CodegenConfig = {
-	schema: [
-		{
-			'https://api.quiltt.io/v1/graphql': {
-				headers: {
-					Authorization: `Bearer ${process.env.QUILTT_API_SECRET_KEY}`,
-				},
-			},
-		},
-	],
-	generates: {
-		'./src/generated/graphql.ts': {
-			plugins: ['typescript', 'typescript-operations'],
-			config: {
-				skipTypename: false,
-				withHooks: true,
-				withHOC: false,
-				withComponent: false,
-			},
-		},
-	},
-}
+  overwrite: true,
+  schema: [
+    {
+      "https://api.quiltt.io/v1/graphql": {
+        headers: {
+          Authorization: `Bearer ${process.env.QUILTT_API_KEY_SECRET}`,
+        },
+      },
+    },
+  ],
+  // GraphQL operations to generate types for.
+  documents: ["src/**/*.graphql"],
+  generates: {
+    // Generated output lives in src/gql (git-ignored). Regenerate with:
+    //   pnpm graphql:generate   (or `pnpm graphql:watch`)
+    "src/gql/": {
+      preset: "client",
+      presetConfig: {
+        fragmentMasking: false,
+      },
+    },
+  },
+};
 
-export default config
+export default config;

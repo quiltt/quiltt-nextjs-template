@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default async function SignInPage() {
   const session = await getSession();
-  const demoProfileId = process.env.QUILTT_USER_ID?.trim() ?? "";
+  const demoProfileId = process.env.QUILTT_PROFILE_ID?.trim() ?? "";
 
   return (
     <main className="flex flex-1 items-center justify-center p-6">

@@ -47,7 +47,7 @@ QUILTT_API_KEY_SECRET="your_api_key_secret"
 NEXT_PUBLIC_QUILTT_CONNECTOR_ID="your_connector_id"
 
 # Optional — the demo Profile (p_...) the sign-in page signs in as
-QUILTT_USER_ID="p_..."
+QUILTT_PROFILE_ID="p_..."
 ```
 
 > Never prefix `QUILTT_API_KEY_SECRET` with `NEXT_PUBLIC_`, and never commit `.env.local`.
@@ -70,7 +70,7 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000), click **Sign in**, and:
 
-1. Sign in with your demo Profile (`QUILTT_USER_ID`) or paste any Profile ID (`p_...`)
+1. Sign in with your demo Profile (`QUILTT_PROFILE_ID`) or paste any Profile ID (`p_...`)
 2. Click **Connect account** to launch the Quiltt Connector
 3. Watch the connected account appear on the dashboard, fetched over the Quiltt GraphQL API
 
@@ -96,7 +96,7 @@ Browser ◀──────── { token, userId, expiresAt } + HttpOnly cook
 Everything Quiltt-specific lives in two files:
 
 - `src/lib/quiltt.ts` — `issueQuilttSessionToken(profileId)` calls the Quiltt Auth API.
-- `src/app/api/session/route.ts` — the demo sign-in resolves a Profile ID from the request body or `QUILTT_USER_ID`.
+- `src/app/api/session/route.ts` — the demo sign-in resolves a Profile ID from the request body or `QUILTT_PROFILE_ID`.
 
 To plug in your real identity provider (Auth.js, Clerk, your own backend, ...), replace that demo resolution so that `profileId` comes from your authenticated user — e.g.:
 

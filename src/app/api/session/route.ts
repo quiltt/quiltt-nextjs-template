@@ -11,7 +11,7 @@ import { SESSION_COOKIE_NAME } from "@/lib/session";
  *
  * Body (optional): { "profileId": "p_..." }
  * Resolves the Profile from the request body, falling back to the
- * `QUILTT_USER_ID` env var. Replace this demo resolution with your own auth
+ * `QUILTT_PROFILE_ID` env var. Replace this demo resolution with your own auth
  * provider (see src/lib/quiltt.ts).
  */
 export async function POST(request: Request) {
@@ -25,13 +25,13 @@ export async function POST(request: Request) {
   }
 
   const profileId =
-    requestedProfileId?.trim() || process.env.QUILTT_USER_ID?.trim();
+    requestedProfileId?.trim() || process.env.QUILTT_PROFILE_ID?.trim();
 
   if (!profileId) {
     return NextResponse.json(
       {
         error:
-          "No profileId provided and QUILTT_USER_ID is not set. Add QUILTT_USER_ID to .env.local or pass a profileId.",
+          "No profileId provided and QUILTT_PROFILE_ID is not set. Add QUILTT_PROFILE_ID to .env.local or pass a profileId.",
       },
       { status: 400 },
     );

@@ -2,14 +2,14 @@
 
 import { useQuilttSession } from "@quiltt/react";
 import { useRouter } from "next/navigation";
-import { type FormEvent, useState } from "react";
+import { type SubmitEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface SignInFormProps {
-  /** The demo Profile ID from QUILTT_USER_ID, if configured. */
+  /** The demo Profile ID from QUILTT_PROFILE_ID, if configured. */
   defaultProfileId?: string;
 }
 
@@ -21,7 +21,7 @@ export function SignInForm({ defaultProfileId = "" }: SignInFormProps) {
   const { importSession } = useQuilttSession();
   const router = useRouter();
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
     setError(null);
@@ -70,7 +70,7 @@ export function SignInForm({ defaultProfileId = "" }: SignInFormProps) {
         />
         <p className="text-xs text-muted-foreground">
           Leave blank to use the demo Profile from{" "}
-          <code className="font-mono">QUILTT_USER_ID</code>.
+          <code className="font-mono">QUILTT_PROFILE_ID</code>.
         </p>
       </div>
 

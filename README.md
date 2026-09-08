@@ -1,163 +1,186 @@
 # Quiltt Next.js Template
 
-This is a [Next.js](https://nextjs.org/) project template integrated with [Quiltt](https://www.quiltt.dev/), designed to quickly bootstrap your fintech application development.
+A modern starter for building financial data products on the [Quiltt](https://quiltt.dev) platform with Next.js.
 
-## Features
+It comes pre-wired with the [Quiltt React SDK](https://quiltt.dev/connector/sdk/react), server-side Session token issuance, the Quiltt Connector, and type-safe GraphQL — so you can go from clone to "connect a bank account and read the data" as fast as possible.
 
-- Next.js 15 with App Router and Turbopack
-- TypeScript for type safety
-- Quiltt React SDK integration
-- GraphQL code generation for Quiltt API
-- Authentication flow with API routes (Login and Signup)
-- UI components from shadcn/ui
-- Tailwind CSS v4 for styling
-- Biome for code formatting and linting
-- React Hook Form with Zod validation
+## ✨ What's included
 
-## Getting Started
+- **Next.js 16** (App Router) with **React 19** and **TypeScript**
+- **Quiltt React SDK** — `QuilttProvider`, `QuilttButton`, `useQuilttSession`, and an Apollo GraphQL client (`gql` / `useQuery`) that automatically attaches the Session token
+- **Secure, server-side Sessions** — a Route Handler mints Profile-scoped Quiltt Session tokens behind `QUILTT_API_KEY_SECRET`; nothing sensitive reaches the browser
+- **A clear auth seam** — the one place you swap the demo identity resolution for your own auth provider
+- **Protected dashboard** with server-side route guarding
+- **Connector integration** — launch the Quiltt Connector to connect accounts
+- **Quiltt GraphQL** — sample `profile` / `accounts` operations, plus **GraphQL Codegen** preconfigured (client preset, output git-ignored)
+- **Modern UI tooling** — Tailwind CSS v4, shadcn/ui components, dark mode, Biome (lint/format), and pnpm
 
-1. Clone this repository:
+## 🚀 Getting started
 
-   ```bash
-   git clone https://github.com/quiltt/quiltt-nextjs-template.git
-   cd quiltt-nextjs-template
-   ```
+### Prerequisites
 
-2. Install dependencies:
+- **Node.js 20.9+** (`.nvmrc` pins `24`)
+- **pnpm**
+- A **Quiltt account** with:
+  - an **API key secret** (`qltt_...`), and
+  - a **Connector** (create one in the [Quiltt Dashboard](https://dashboard.quiltt.dev))
 
-   ```bash
-   pnpm install
-   ```
+### 1. Install
 
-3. Set up your environment variables:
+```bash
+pnpm install
+```
 
-   Create a `.env.local` file in the root directory and add your Quiltt API key:
+### 2. Configure environment variables
 
-   ```env
-   QUILTT_API_SECRET_KEY=your_api_secret_key_here
-   ```
+```bash
+cp .env.example .env.local
+```
 
-4. Generate GraphQL types:
+Then open `.env.local` and fill in your credentials:
 
-   ```bash
-   pnpm run graphql:generate
-   ```
+```env
+# Server-only — from the Quiltt Dashboard
+QUILTT_API_KEY_SECRET="your_api_key_secret"
 
-5. Run the development server:
+# The Connector ID your <QuilttButton /> will launch
+NEXT_PUBLIC_QUILTT_CONNECTOR_ID="your_connector_id"
 
-   ```bash
-   pnpm dev
-   ```
+# Optional — the demo Profile (p_...) the sign-in page signs in as
+QUILTT_PROFILE_ID="p_..."
+```
 
-   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> Never prefix `QUILTT_API_KEY_SECRET` with `NEXT_PUBLIC_`, and never commit `.env.local`.
 
-## Project Structure
+### 3. (Optional) Generate GraphQL types
+
+GraphQL Codegen introspects the Quiltt schema and emits typed helpers into `src/gql/` (git-ignored). Requires `QUILTT_API_KEY_SECRET`:
+
+```bash
+pnpm graphql:generate
+```
+
+The app itself builds and runs without this step — sample pages use the SDK's runtime `gql` tag so you can start before configuring anything. See [GraphQL tooling](#-graphql-tooling).
+
+### 4. Run it
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000), click **Sign in**, and:
+
+1. Sign in with your demo Profile (`QUILTT_PROFILE_ID`) or paste any Profile ID (`p_...`)
+2. Click **Connect account** to launch the Quiltt Connector
+3. Watch the connected account appear on the dashboard, fetched over the Quiltt GraphQL API
+
+## 🔐 How authentication works
+
+Quiltt doesn't manage your end-users. **Profiles** are your users inside Quiltt, and a **Session token** is a Profile-scoped, 24-hour JWT that authenticates that user to the Connector and GraphQL API.
+
+This template demonstrates the recommended pattern:
+
+```
+Browser ── POST /api/session { profileId } ──▶  Next.js Route Handler
+                                                   │  mints a Session token via the Quiltt Auth API
+                                                   ▼
+Browser ◀──────── { token, userId, expiresAt } + HttpOnly cookie
+```
+
+- The **Route Handler** (`src/app/api/session/route.ts`) mints Session tokens using `QUILTT_API_KEY_SECRET` (server-only) and remembers the signed-in Profile in an **HttpOnly cookie**.
+- The **SDK** stores the Session token client-side and automatically attaches it to `QuilttButton` and every GraphQL request.
+- The **dashboard** is guarded **server-side** — no cookie, no render.
+
+### The auth seam (bring your own auth)
+
+Everything Quiltt-specific lives in two files:
+
+- `src/lib/quiltt.ts` — `issueQuilttSessionToken(profileId)` calls the Quiltt Auth API.
+- `src/app/api/session/route.ts` — the demo sign-in resolves a Profile ID from the request body or `QUILTT_PROFILE_ID`.
+
+To plug in your real identity provider (Auth.js, Clerk, your own backend, ...), replace that demo resolution so that `profileId` comes from your authenticated user — e.g.:
+
+```ts
+const user = await getCurrentUser(); // your auth provider
+if (!user) return 401;
+const { token } = await issueQuilttSessionToken(user.quilttProfileId);
+```
+
+### Session token best practices
+
+- Session tokens are rate-limited (**10/hour, 20/day per Profile**) — mint them on sign-in and cache them, not on every request.
+- Revoke tokens on sign-out (this template calls `revokeSession()`).
+- Prefer server-to-server [Basic Auth](https://quiltt.dev/authentication) when you don't need a user-scoped token.
+
+See [Issuing Session Tokens](https://quiltt.dev/authentication/issuing-session-tokens) for details.
+
+## 📁 Project structure
 
 ```
 src/
 ├── app/
-│   ├── (app)/                 # App group with layout
-│   │   ├── (private)/         # Protected routes
-│   │   │   └── dashboard/     # Dashboard page
-│   │   ├── (public)/          # Public routes
-│   │   │   ├── login/         # Login page
-│   │   │   └── signup/        # Signup page
-│   │   ├── globals.css        # Global styles
-│   │   ├── layout.tsx         # Root layout
-│   │   └── page.tsx           # Home page
-│   └── api/                   # API routes
-│       ├── login/             # Login API endpoint
-│       └── signup/            # Signup API endpoint
+│   ├── api/
+│   │   └── session/route.ts     # Mint / clear demo Session (POST/DELETE)
+│   ├── dashboard/page.tsx       # Protected dashboard (server-guarded)
+│   ├── sign-in/page.tsx         # Demo sign-in
+│   ├── layout.tsx               # Root layout (fonts, theme, <QuilttProviders>)
+│   ├── page.tsx                 # Landing page
+│   └── globals.css              # Tailwind v4 + shadcn/ui theme tokens
 ├── components/
-│   └── ui/                    # shadcn/ui components
-├── generated/
-│   └── graphql.ts             # Generated GraphQL types
-├── hooks/
-│   ├── accounts/              # Account-related hooks
-│   ├── quiltt/                # Quiltt-specific hooks
-│   └── useQuilttAuth.ts       # Authentication hook
+│   ├── dashboard/dashboard-client.tsx  # Connect button + accounts (client)
+│   ├── sign-in-form.tsx         # Demo sign-in form
+│   ├── quiltt-provider.tsx      # Mounts <QuilttProvider> once
+│   ├── theme-toggle.tsx
+│   └── ui/                      # shadcn/ui primitives (button, card, input, label)
+├── graphql/
+│   └── operations.graphql       # Sample operations consumed by codegen
 └── lib/
-    └── utils.ts               # Utility functions
+    ├── quiltt.ts                # Server-side Quiltt helpers (auth seam)
+    ├── session.ts               # Demo session cookie helpers
+    └── utils.ts                 # cn()
 ```
 
-## Available Scripts
+## 🧩 GraphQL tooling
 
-- `pnpm dev` - Start development server with Turbopack
-- `pnpm build` - Build the application for production
-- `pnpm start` - Start the production server
-- `pnpm lint` - Run Biome linter and formatter
-- `pnpm typecheck` - Run TypeScript type checking
-- `pnpm graphql:generate` - Generate GraphQL types from schema
+This template uses [GraphQL Code Generator](https://the-guild.dev/graphql/codegen/docs/getting-started) with the `client` preset:
 
-## Authentication
+- **Operations** live in `src/**/*.graphql` (see `src/graphql/operations.graphql`).
+- **Schema source**: `https://api.quiltt.io/v1/graphql`, authenticated with `QUILTT_API_KEY_SECRET`.
+- **Output**: generated typed helpers in `src/gql/` — **git-ignored** — so schema churn never pollutes your diffs.
 
-The template includes a complete authentication flow:
+```bash
+pnpm graphql:generate   # one-shot
+pnpm graphql:watch      # watch mode
+```
 
-- **Public routes**: Login and signup pages accessible without authentication
-- **Private routes**: Dashboard and other protected pages requiring authentication
-- **API routes**: Server-side authentication endpoints
-- **Custom hooks**: `useQuilttAuth` for managing authentication state
+The generated documents are `TypedDocumentNode`s, so you can pass them straight to the `useQuery` re-exported by `@quiltt/react` for fully typed results.
 
-## Customization
+Follow the [GraphQL Tooling tutorial](https://quiltt.dev/get-started/tutorials/graphql-tooling) for the full walkthrough.
 
-You can start customizing the template by:
+## 📜 Scripts
 
-1. Modifying pages in the `src/app/(app)` directory
-2. Adding new UI components in `src/components`
-3. Creating custom hooks in `src/hooks`
-4. Updating styles using Tailwind CSS classes
-5. Configuring Tailwind in `tailwind.config.ts`
+| Script                  | Description                                    |
+| ----------------------- | ---------------------------------------------- |
+| `pnpm dev`              | Start the dev server (Turbopack)               |
+| `pnpm build`            | Create a production build                      |
+| `pnpm start`            | Start the production server                    |
+| `pnpm typecheck`        | Run `tsc --noEmit`                             |
+| `pnpm lint`             | Biome check                                    |
+| `pnpm format`           | Biome format                                   |
+| `pnpm graphql:generate` | Generate GraphQL types into `src/gql/`         |
+| `pnpm graphql:watch`    | Regenerate GraphQL types on file changes       |
 
-## Development Tools
+## 📚 Learn more
 
-- **Biome**: Fast formatter and linter (configured in `biome.json`)
-- **TypeScript**: Full type safety throughout the application
-- **GraphQL Code Generation**: Automatic type generation for Quiltt API
-- **Turbopack**: Fast development builds with Next.js 15
+- [Quiltt Docs](https://quiltt.dev) — Connectors, authentication, and the GraphQL API
+- [React SDK reference](https://quiltt.dev/connector/sdk/react)
+- [Authentication tutorial](https://quiltt.dev/get-started/tutorials/authentication)
+- [Quiltt on GitHub](https://github.com/quiltt/quiltt-sdks)
 
-## Learn More
+## 🤝 Contributing
 
-To learn more about the technologies used in this template:
+Contributions are welcome. Please open an issue or pull request.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API
-- [Quiltt Documentation](https://www.quiltt.dev/docs) - explore Quiltt's features and API
-- [shadcn/ui](https://ui.shadcn.com/) - learn about the UI components used in this template
-- [Tailwind CSS](https://tailwindcss.com/docs) - style your application efficiently
-- [Biome](https://biomejs.dev/) - fast formatter and linter for JavaScript and TypeScript
+## 📄 License
 
-## Deployment
-
-### Vercel (Recommended)
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-1. Push your code to a Git repository
-2. Import your project to Vercel
-3. Add your environment variables in the Vercel dashboard
-4. Deploy automatically on every push
-
-### Other Platforms
-
-This template can be deployed on any platform that supports Node.js applications, such as:
-
-- Railway
-- Render
-- DigitalOcean App Platform
-- AWS Amplify
-- Netlify
-
-Make sure to set your environment variables and run `pnpm build` during the build process.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+[MIT](./LICENSE.md) © Quiltt, Inc.

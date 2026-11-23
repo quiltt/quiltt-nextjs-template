@@ -11,21 +11,6 @@
  *
  * NOTE: this module reads `process.env.QUILTT_API_KEY_SECRET` and must only be
  * imported from Server Components, Route Handlers, or Server Actions.
- *
- * ── Alternative: client-side, passwordless auth (no API key) ────────────────
- * The Quiltt React SDK also ships a Quiltt-hosted, magic-code auth flow that
- * runs entirely in the browser — no server minting required. This template
- * uses the server-side model above, but the option exists if you prefer Quiltt
- * to manage your end-users' identity/auth:
- *
- *   - `useQuilttSession()` (from `@quiltt/react/hooks`) exposes
- *     `identifySession({ email }, cb)` to start login/signup and
- *     `authenticateSession({ passcode }, cb)` to confirm the emailed code.
- *   - It requires a Quiltt `clientId` (`NEXT_PUBLIC_QUILTT_CLIENT_ID`) passed
- *     to `QuilttProvider` — not an API key secret.
- *   - Under the hood it uses `AuthAPI` against `https://auth.quiltt.io/v1/users/session`
- *     (singular). See the SDK docs / source for full details.
- *   https://quiltt.dev/get-started/tutorials/authentication
  */
 
 export const QUILTT_AUTH_ENDPOINT = "https://auth.quiltt.io/v1/users/sessions";

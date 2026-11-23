@@ -13,8 +13,7 @@ import type { ReactNode } from "react";
  *    with the SDK's session context.
  *
  * No `clientId` is required here because this template mints Session tokens
- * server-side. `clientId` is only needed if you use Quiltt's client-side,
- * passwordless Auth flow instead.
+ * server-side.
  */
 export function QuilttProviders({ children }: { children: ReactNode }) {
   return <QuilttProvider>{children}</QuilttProvider>;

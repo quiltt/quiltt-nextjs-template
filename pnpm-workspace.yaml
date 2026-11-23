@@ -1,4 +1,3 @@
-onlyBuiltDependencies:
-  - '@biomejs/biome'
-  - '@tailwindcss/oxide'
-  - sharp
+allowBuilds:
+  sharp: false
+  unrs-resolver: false

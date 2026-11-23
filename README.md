@@ -159,16 +159,16 @@ Follow the [GraphQL Tooling tutorial](https://quiltt.dev/get-started/tutorials/g
 
 ## 📜 Scripts
 
-| Script                  | Description                                    |
-| ----------------------- | ---------------------------------------------- |
-| `pnpm dev`              | Start the dev server (Turbopack)               |
-| `pnpm build`            | Create a production build                      |
-| `pnpm start`            | Start the production server                    |
-| `pnpm typecheck`        | Run `tsc --noEmit`                             |
-| `pnpm lint`             | Biome check                                    |
-| `pnpm format`           | Biome format                                   |
-| `pnpm graphql:generate` | Generate GraphQL types into `src/gql/`         |
-| `pnpm graphql:watch`    | Regenerate GraphQL types on file changes       |
+| Script                  | Description                              |
+| ----------------------- | ---------------------------------------- |
+| `pnpm dev`              | Start the dev server (Turbopack)         |
+| `pnpm build`            | Create a production build                |
+| `pnpm start`            | Start the production server              |
+| `pnpm typecheck`        | Run `tsc --noEmit`                       |
+| `pnpm lint`             | Biome check                              |
+| `pnpm format`           | Biome format                             |
+| `pnpm graphql:generate` | Generate GraphQL types into `src/gql/`   |
+| `pnpm graphql:watch`    | Regenerate GraphQL types on file changes |
 
 ## 📚 Learn more
 
